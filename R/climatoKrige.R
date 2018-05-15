@@ -1,3 +1,7 @@
+#'@title climatoKrige
+#'@description Krigeage selon un parametre climato, une bounding box, une taille de cellule et une periode
+#'@export
+#'@examples climatoKrige("NORTAV", 765366.9039,6365089.3268,862527.7841,6445434.0002,3000,1)
 
 climatoKrige <- function(d,xmin,ymin,xmax,ymax,taille, periode){
 
@@ -81,4 +85,5 @@ climatoKrige <- function(d,xmin,ymin,xmax,ymax,taille, periode){
             grid,
             model = c("Sph", "Exp", "Gau", "Ste"))
   print(kri)
+  plot(kri)
 }
