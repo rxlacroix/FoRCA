@@ -6,6 +6,15 @@
 \usage{
 climatoKrige(d, xmin, ymin, xmax, ymax, taille, periode)
 }
+\arguments{
+\item{d}{une variable climatique (character) à choisir parmi celles proposées}
+
+\item{xmin}{... copier coller la bounding box créée depuis http://bboxfinder.com (choisir les coordonnées EPSG:2154)}
+
+\item{taille}{taille du côté d'une cellule de la grille (en metres)}
+
+\item{periode}{un nombre entre 1 et 12 pour choisir un mois précis, un vecteur pour un ensemble de mois, "année" pour la somme sur l'année entière}
+}
 \description{
 Krigeage selon un parametre climato, une bounding box, une taille de cellule et une periode
 }
