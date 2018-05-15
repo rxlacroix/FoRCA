@@ -1,5 +1,9 @@
 #'@title climatoKrige
 #'@description Krigeage selon un parametre climato, une bounding box, une taille de cellule et une periode
+#'@param d une variable climatique (character) à choisir parmi celles proposées
+#'@param xmin ... copier coller la bounding box créée depuis http://bboxfinder.com (choisir les coordonnées EPSG:2154)
+#'@param taille  taille du côté d'une cellule de la grille (en metres)
+#'@param periode un nombre entre 1 et 12 pour choisir un mois précis, un vecteur pour un ensemble de mois, "année" pour la somme sur l'année entière
 #'@export
 #'@examples climatoKrige("NORTAV", 765366.9039,6365089.3268,862527.7841,6445434.0002,3000,1)
 
