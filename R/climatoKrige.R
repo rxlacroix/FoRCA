@@ -14,17 +14,12 @@ climatoKrige <- function(d,xmin,ymin,xmax,ymax,taille, periode){
 
   #VALIDATION INPUTS
 
+  cndata <- colnames(data_climat)
 
-  if (d %in% c("NORPAV","NORPINT", "NORRR", "NORPFL90", "NORRR1MM","NORPXCWD", "NORPN20MM", "NORPXCDD"))
+  if (paste0(d,"_",1) %in% cndata)
   {
-    dataset <- Precipitations
-    print("Dataset : Precipitations")
-  } else if (d %in% c("NORTAV", "NORTNAV", "NORTXAV", "NORTRAV", "NORTXQ90", "NORTXQ10", "NORTNQ10", "NORTNQ90",
-                      "NORTXND", "NORTNND", "NORTNHT", "NORTXHWD", "NORTNCWD", "NORTNFD", "NORTXFD", "NORTXFD",
-                      "NORSD", "NORTR", "NORHDD", "NORCDD")){
-    dataset <- Temperatures
-    print("Dataset : Temperatures")
-
+    dataset <- data_climat
+    print("Dataset : data_climat")
   } else {
     stop("Mauvais paramètre climatologique")
   }
@@ -47,19 +42,8 @@ climatoKrige <- function(d,xmin,ymin,xmax,ymax,taille, periode){
 
     data <-
       dataset %>%
-      dplyr::select(Point, Mois,d) %>%
-      mutate(Mois = paste0("d_",Mois)) %>%
-      spread(Mois, d) %>%
-      mutate(TOT = rowSums(.[grep("d_", names(.))], na.rm = TRUE) ) %>%
-      mutate(d_2 = d_2 * (31/28.25),
-             d_4 = d_4 * (31/30),
-             d_6 = d_6 * (31/30),
-             d_9 = d_9 * (31/30),
-             d_11 = d_11 * (31/30))
-    data <- data[,c("Point", grep(paste0("_",periode), names(data), value=TRUE, useBytes = TRUE))]
-    if(NCOL(data) >2) {
-      data <- data[,1:2]
-    }
+      dplyr::select(Point, Latitude, Longitude,paste0(d,"_",periode))
+
     print(head(data))
   } else if (is.vector(periode)){
 
@@ -72,22 +56,22 @@ climatoKrige <- function(d,xmin,ymin,xmax,ymax,taille, periode){
   #GRRRRID
   grid <- expand.grid(x=seq(from=xmin, to=xmax, by=taille), y=seq(from=ymin, to=ymax, by=taille))
   coordinates(grid) <- ~ x+y
-  proj4string(grid) <- CRS("+init=epsg:2154")
+  proj4string(grid) <- sp::CRS("+init=epsg:2154")
   gridded(grid) <- TRUE
   cat("Grille créée tous les", taille,"m\n")
 
   # GEODATA
+  myTheme <- rasterTheme(region = viridis(n = 10)); myTheme$axis.list$col <- 'transparent'
 
-  geodata <- Points.geo %>% merge(data, by = "Point")
-  # conversion sf vers sp juste pour gstat
-  geodata <- as(geodata, 'Spatial')
-  geodata <- spTransform(geodata, crs(grid))
-  geodata_compr <<-geodata
-
-  kri <- autoKrige(geodata@data[,2] ~ 1,
-            geodata,
-            grid,
-            model = c("Sph", "Exp", "Gau", "Ste"))
-  print(kri)
-  plot(kri)
-}
+  data <- subset(data, data$Longitude < 1.1*xmax & data$Longitude > 0.9*xmin & data$Latitude < 1.1*ymax & data$Latitude > 0.9*ymin)
+  coordinates(data) <- ~Longitude+Latitude
+  proj4string(data) <- CRS("+init=epsg:2154")
+  variogram <- autofitVariogram(data@data[,paste0(d,"_",periode)]~1,data, model = c("Bes", "Ste"), fix.values = c(NA,16000,NA))
+  plot(variogram)
+  k_i <- krige(data@data[,paste0(d,"_",periode)]~1, data, grid, model=variogram$var_model, nmax = 20)
+  k_i <- as.data.frame(k_i)
+  k_i <- k_i[,-c(4)]
+  r_k_i <- rasterFromXYZ(k_i)
+  plot <- levelplot(r_k_i, par.settings= myTheme, main = paste0(d,"_",periode))
+  print(plot)
+  }

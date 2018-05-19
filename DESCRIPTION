@@ -18,5 +18,9 @@ Depends: R (>= 2.15.0),
     sp,
     automap,
     gstat,
-    spdplyr
+    spdplyr,
+    viridis,
+    rasterVis,
+    latticeExtra
+
 
