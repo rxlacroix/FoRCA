@@ -7,17 +7,17 @@
 climatoKrige(d, xmin, ymin, xmax, ymax, taille, periode)
 }
 \arguments{
-\item{d}{une variable climatique (character) à choisir parmi celles proposées}
+\item{d}{une variable climatique (character) à choisir parmi celles proposées : "NORTAV","NORTNAV","NORTXAV","NORTRAV","NORTXQ90","NORTXQ10","NORTNQ10","NORTNQ90","NORTXND","NORTNND","NORTNHT","NORTXHWD","NORTNCWD","NORTNFD","NORTXFD","NORSD","NORTR","NORHDD","NORCDD"}
 
 \item{xmin}{... copier coller la bounding box créée depuis http://bboxfinder.com (choisir les coordonnées EPSG:2154)}
 
 \item{taille}{taille du côté d'une cellule de la grille (en metres)}
 
-\item{periode}{un nombre entre 1 et 12 pour choisir un mois précis, un vecteur pour un ensemble de mois, "année" pour la somme sur l'année entière}
+\item{periode}{un nombre entre 1 et 12 pour choisir un mois précis}
 }
 \description{
 Krigeage selon un parametre climato, une bounding box, une taille de cellule et une periode
 }
 \examples{
-climatoKrige("NORTAV", 765366.9039,6365089.3268,862527.7841,6445434.0002,3000,1)
+climatoKrige("NORTAV", 805532.9843,6292039.0981,876022.3895,6353126.3605,200,7)
 }

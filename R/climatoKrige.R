@@ -1,16 +1,13 @@
 #'@title climatoKrige
 #'@description Krigeage selon un parametre climato, une bounding box, une taille de cellule et une periode
-#'@param d une variable climatique (character) à choisir parmi celles proposées
+#'@param d une variable climatique (character) à choisir parmi celles proposées : "NORTAV","NORTNAV","NORTXAV","NORTRAV","NORTXQ90","NORTXQ10","NORTNQ10","NORTNQ90","NORTXND","NORTNND","NORTNHT","NORTXHWD","NORTNCWD","NORTNFD","NORTXFD","NORSD","NORTR","NORHDD","NORCDD"
 #'@param xmin ... copier coller la bounding box créée depuis http://bboxfinder.com (choisir les coordonnées EPSG:2154)
 #'@param taille  taille du côté d'une cellule de la grille (en metres)
-#'@param periode un nombre entre 1 et 12 pour choisir un mois précis, un vecteur pour un ensemble de mois, "année" pour la somme sur l'année entière
+#'@param periode un nombre entre 1 et 12 pour choisir un mois précis
 #'@export
-#'@examples climatoKrige("NORTAV", 765366.9039,6365089.3268,862527.7841,6445434.0002,3000,1)
+#'@examples climatoKrige("NORTAV", 805532.9843,6292039.0981,876022.3895,6353126.3605,200,7)
 
 climatoKrige <- function(d,xmin,ymin,xmax,ymax,taille, periode){
-
-
-  library(sp)
 
   #VALIDATION INPUTS
 
@@ -66,9 +63,9 @@ climatoKrige <- function(d,xmin,ymin,xmax,ymax,taille, periode){
   data <- subset(data, data$Longitude < 1.1*xmax & data$Longitude > 0.9*xmin & data$Latitude < 1.1*ymax & data$Latitude > 0.9*ymin)
   coordinates(data) <- ~Longitude+Latitude
   proj4string(data) <- CRS("+init=epsg:2154")
-  variogram <- autofitVariogram(data@data[,paste0(d,"_",periode)]~1,data, model = c("Bes", "Ste"), fix.values = c(NA,16000,NA))
+  variogram <- autofitVariogram(data@data[,paste0(d,"_",periode)]~1,data, model = c("Sph", "Exp", "Gau", "Bes", "Ste"), fix.values = c(NA,20000,NA))
   plot(variogram)
-  k_i <- krige(data@data[,paste0(d,"_",periode)]~1, data, grid, model=variogram$var_model, nmax = 20)
+  k_i <- krige(data@data[,paste0(d,"_",periode)]~1, data, grid, model=variogram$var_model, nmax = 20, maxdist = 20000)
   k_i <- as.data.frame(k_i)
   k_i <- k_i[,-c(4)]
   r_k_i <- rasterFromXYZ(k_i)
