@@ -63,9 +63,9 @@ climatoKrige <- function(d,xmin,ymin,xmax,ymax,taille, periode){
   data <- subset(data, data$Longitude < 1.1*xmax & data$Longitude > 0.9*xmin & data$Latitude < 1.1*ymax & data$Latitude > 0.9*ymin)
   coordinates(data) <- ~Longitude+Latitude
   proj4string(data) <- CRS("+init=epsg:2154")
-  variogram <- autofitVariogram(data@data[,paste0(d,"_",periode)]~1,data, model = c("Sph", "Exp", "Gau", "Bes", "Ste"), fix.values = c(NA,20000,NA))
+  variogram <- autofitVariogram(data@data[,paste0(d,"_",periode)]~1,data, model = "Gau", fix.values = c(NA,NA,NA))
   plot(variogram)
-  k_i <- krige(data@data[,paste0(d,"_",periode)]~1, data, grid, model=variogram$var_model, nmax = 20, maxdist = 20000)
+  k_i <- krige(data@data[,paste0(d,"_",periode)]~1, data, grid, model=variogram$var_model, nmax =10, nmin = 2)
   k_i <- as.data.frame(k_i)
   k_i <- k_i[,-c(4)]
   r_k_i <- rasterFromXYZ(k_i)
