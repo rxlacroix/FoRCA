@@ -19,5 +19,5 @@ climatoKrige(d, xmin, ymin, xmax, ymax, taille, periode)
 Krigeage selon un parametre climato, une bounding box, une taille de cellule et une periode
 }
 \examples{
-climatoKrige("NORTAV", 805532.9843,6292039.0981,876022.3895,6353126.3605,200,7)
+climatoKrige("NORTAV", 806149.1821,6294916.9104,882619.2089,6382762.4764,150,7)
 }

@@ -5,7 +5,7 @@
 #'@param taille  taille du côté d'une cellule de la grille (en metres)
 #'@param periode un nombre entre 1 et 12 pour choisir un mois précis
 #'@export
-#'@examples climatoKrige("NORTAV", 805532.9843,6292039.0981,876022.3895,6353126.3605,200,7)
+#'@examples climatoKrige("NORTAV", 806149.1821,6294916.9104,882619.2089,6382762.4764,150,7)
 
 climatoKrige <- function(d,xmin,ymin,xmax,ymax,taille, periode){
 
@@ -63,7 +63,7 @@ climatoKrige <- function(d,xmin,ymin,xmax,ymax,taille, periode){
   data <- subset(data, data$Longitude < 1.1*xmax & data$Longitude > 0.9*xmin & data$Latitude < 1.1*ymax & data$Latitude > 0.9*ymin)
   coordinates(data) <- ~Longitude+Latitude
   proj4string(data) <- CRS("+init=epsg:2154")
-  variogram <- autofitVariogram(data@data[,paste0(d,"_",periode)]~1,data, model = "Gau", fix.values = c(NA,NA,NA))
+  variogram <- autofitVariogram(data@data[,paste0(d,"_",periode)]~1,data, model = c("Exp","Sph","Gau","Cir","Ste","Mat","Exc", "Leg","Lin","Bes","Pen","Per","Wav","Hol","Log","Spl"), verbose = TRUE, fix.values = c(NA,NA,NA))
   plot(variogram)
   k_i <- krige(data@data[,paste0(d,"_",periode)]~1, data, grid, model=variogram$var_model, nmax =10, nmin = 2)
   k_i <- as.data.frame(k_i)
